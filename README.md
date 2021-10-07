@@ -1,3 +1,7 @@
+# What is this?
+
+scripts/config for creating a k8s cluster and bootstrapping a full set of cluster-runtime dependencies, eg: prometheus, auth proxy, etc.
+
 # NOTES
 
 * some things in makefile and `kubeprod-manifest` are currently EKS-specific
