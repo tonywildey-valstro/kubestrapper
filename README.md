@@ -1,6 +1,6 @@
 # What is this?
 
-scripts/config for creating a k8s cluster and bootstrapping a full set of cluster-runtime dependencies, eg: prometheus, auth proxy, etc.
+scripts/config for creating a k8s cluster and bootstrapping a full set of cluster-runtime dependencies, eg: prometheus, auth proxy, etc. based on https://github.com/bitnami/kube-prod-runtime
 
 # NOTES
 
