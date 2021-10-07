@@ -1,0 +1,7 @@
+.env
+bkpr-gke-config.sh
+kubeprod-autogen.json
+kubeprod-autogen.*.json
+.out
+.bin
+.DS_Store
