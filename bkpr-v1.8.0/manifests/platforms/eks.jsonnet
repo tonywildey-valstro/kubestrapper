@@ -26,6 +26,8 @@ local cert_manager = import "../components/cert-manager.jsonnet";
 local edns = import "../components/externaldns.jsonnet";
 local nginx_ingress = import "../components/nginx-ingress.jsonnet";
 local prometheus = import "../components/prometheus.jsonnet";
+local galera = import "../components/mariadb-galera.jsonnet";
+local keycloak = import "../components/keycloak.jsonnet";
 local oauth2_proxy = import "../components/oauth2-proxy.jsonnet";
 local fluentd_es = import "../components/fluentd-es.jsonnet";
 local elasticsearch = import "../components/elasticsearch.jsonnet";
@@ -41,6 +43,7 @@ local grafana = import "../components/grafana.jsonnet";
   external_dns_zone_name:: $.config.dnsZone,
   letsencrypt_contact_email:: $.config.contactEmail,
   letsencrypt_environment:: "prod",
+  ssl_skip_verify:: if $.letsencrypt_environment == 'staging' then true else false,
 
   version: version,
 
@@ -117,9 +120,29 @@ local grafana = import "../components/grafana.jsonnet";
     },
   },
 
+  galera: galera {
+    secret+: {
+      data_+: $.config.mariadbGalera,
+    },
+  },
+
+  keycloak: keycloak {
+    galera: $.galera,
+    oauth2_proxy:: $.oauth2_proxy,
+    secret+: {
+      data_+: $.config.keycloak,
+    },
+    ingress+: {
+      host: "id." + $.external_dns_zone_name,
+    },
+  },
+
   oauth2_proxy: oauth2_proxy {
     secret+: {
-      data_+: $.config.oauthProxy,
+      data_+: $.config.oauthProxy + {
+        client_id: $.config.keycloak.client_id,
+        client_secret: $.config.keycloak.client_secret,
+      },
     },
 
     ingress+: {
@@ -133,17 +156,13 @@ local grafana = import "../components/grafana.jsonnet";
             containers_+: {
               proxy+: {
                 args_+: {
-                  provider: "oidc",
-                  "oidc-issuer-url": "https://cognito-idp.%s.amazonaws.com/%s" % [
-                    $.config.oauthProxy.aws_region,
-                    $.config.oauthProxy.aws_user_pool_id,
-                  ],
-                  /* NOTE: disable cookie refresh token.
-                   * As per https://docs.aws.amazon.com/cognito/latest/developerguide/token-endpoint.html:
-                   * The refresh token is defined in the specification, but is not currently implemented to
-                   * be returned from the Token Endpoint.
-                   */
-                  "cookie-refresh": "0",
+                  "email-domain": $.config.oauthProxy.authz_domain,
+                  provider: "keycloak",
+                  "keycloak-group": $.config.keycloak.group,
+                  "login-url": "https://id.%s/auth/realms/BKPR/protocol/openid-connect/auth" % $.external_dns_zone_name,
+                  "redeem-url": "https://id.%s/auth/realms/BKPR/protocol/openid-connect/token" % $.external_dns_zone_name,
+                  "validate-url": "https://id.%s/auth/realms/BKPR/protocol/openid-connect/userinfo" % $.external_dns_zone_name,
+                  "ssl-insecure-skip-verify": $.ssl_skip_verify,
                 },
               },
             },

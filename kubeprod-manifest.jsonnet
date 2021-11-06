@@ -1,9 +1,9 @@
-local kube = import "./bkpr-v1.7.0-rc1/manifests/vendor/github.com/bitnami-labs/kube-libsonnet/kube.libsonnet";
-local utils = import "./bkpr-v1.7.0-rc1/manifests/vendor/github.com/bitnami-labs/kube-libsonnet/utils.libsonnet";
+local kube = import "./bkpr-v1.8.0/manifests/vendor/github.com/bitnami-labs/kube-libsonnet/kube.libsonnet";
+local utils = import "./bkpr-v1.8.0/manifests/vendor/github.com/bitnami-labs/kube-libsonnet/utils.libsonnet";
 local GRAFANA_DASHBOARDS_CONFIG = "/opt/bitnami/grafana/conf/provisioning/dashboards";
 
 // Cluster-specific configuration
-(import "https://releases.kubeprod.io/files/v1.7.0-rc1/manifests/platforms/eks.jsonnet") {
+(import "./bkpr-v1.8.0/manifests/platforms/eks.jsonnet") {
 	config:: import "kubeprod-autogen.json",
 	// Place your overrides here
     // See https://github.com/bitnami/kube-prod-runtime/blob/master/docs/components.md#prometheus
