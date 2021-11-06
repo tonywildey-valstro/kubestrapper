@@ -3,8 +3,8 @@ kind: ClusterConfig
 
 metadata:
   name: #CLUSTER_NAME#
-  region: us-west-2
-  version: "1.18"
+  region: #CLUSTER_REGION#
+  version: #CLUSTER_VERSION#
 
 nodeGroups:
   - name: nodes
@@ -15,9 +15,9 @@ nodeGroups:
     kubeletExtraConfig:
       featureGates:
         EphemeralContainers: true
-    ssh:
-      allow: true
-      publicKeyName: kube-dev
+    # ssh:
+    #   allow: true
+    #   publicKeyName: kube-dev
     iam:
       withAddonPolicies:
         imageBuilder: true
