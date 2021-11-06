@@ -1,6 +1,5 @@
-BKPR_VERSION=v1.7.1
-
-
+BKPR_VERSION=v1.8.1
+KUBEPROD_RELEASE_URL=https://github.com/andycmaj/kube-prod-runtime/releases/download
 
 LOCAL_BIN := $(CURDIR)/.bin
 PATH := $(LOCAL_BIN):$(PATH)
@@ -16,22 +15,22 @@ $(EKSCTL):
 
 KUBEPROD := $(LOCAL_BIN)/kubeprod
 $(KUBEPROD): $(CURL)
-	$(CURL) -LO https://github.com/bitnami/kube-prod-runtime/releases/download/${BKPR_VERSION}/bkpr-${BKPR_VERSION}-${OS}-amd64.tar.gz \
+	$(CURL) -LO ${KUBEPROD_RELEASE_URL}/${BKPR_VERSION}/bkpr-${BKPR_VERSION}-${OS}-amd64.tar.gz \
 	&& tar xf bkpr-${BKPR_VERSION}-${OS}-amd64.tar.gz \
 	&& chmod +x bkpr-${BKPR_VERSION}/kubeprod \
 	&& sudo mv bkpr-${BKPR_VERSION}/kubeprod $(LOCAL_BIN)
 
-KUBECFG := /usr/local/bin/kubecfg
+KUBECFG := $(shell which kubecfg)
 $(KUBECFG): 
 	@brew install kubecfg
 
-KUBECTL := /usr/local/bin/kubectl
+KUBECTL := $(shell which kubectl)
 $(KUBECTL): 
 	@brew install kubernetes-cli
 	
-HELM := /usr/local/bin/helm
+HELM := $(shell which helm)
 $(HELM):
-	brew install helm
+	@brew install helm
 
 YTT_RELEASES := https://github.com/k14s/ytt/releases
 YTT_VERSION := 0.30.0
@@ -53,12 +52,16 @@ ytt: $(YTT)
 releases-ytt:
 	@$(OPEN) $(YTT_RELEASES)
 
+CLUSTER_REGION ?= "us-west-2"
+CLUSTER_VERSION ?= "1.21"
 AWS_EKS_CLUSTER_SPEC=$(CURDIR)/.out/cluster.yml
 
 .PHONY: cluster-create
 cluster-create: $(EKSCTL) $(YTT)
 	cat $(CURDIR)/cluster.yml | \
 	sed "s/#CLUSTER_NAME#/$(CLUSTER_NAME)/g" > $(AWS_EKS_CLUSTER_SPEC) \
+	sed "s/#CLUSTER_REGION#/$(CLUSTER_REGION)/g" > $(AWS_EKS_CLUSTER_SPEC) \
+	sed "s/#CLUSTER_VERSION#/$(CLUSTER_VERSION)/g" > $(AWS_EKS_CLUSTER_SPEC) \
 	&& $(EKSCTL) create cluster -f $(AWS_EKS_CLUSTER_SPEC)
 
 .PHONY: cluster-delete
