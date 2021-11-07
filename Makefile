@@ -52,22 +52,24 @@ ytt: $(YTT)
 releases-ytt:
 	@$(OPEN) $(YTT_RELEASES)
 
-CLUSTER_REGION ?= "us-west-2"
+CLUSTER_REGION ?= "us-east-2"
 CLUSTER_VERSION ?= "1.21"
 AWS_EKS_CLUSTER_SPEC=$(CURDIR)/.out/cluster.yml
 
 .PHONY: cluster-create
 cluster-create: $(EKSCTL) $(YTT)
 	cat $(CURDIR)/cluster.yml | \
-	sed "s/#CLUSTER_NAME#/$(CLUSTER_NAME)/g" > $(AWS_EKS_CLUSTER_SPEC) \
-	sed "s/#CLUSTER_REGION#/$(CLUSTER_REGION)/g" > $(AWS_EKS_CLUSTER_SPEC) \
-	sed "s/#CLUSTER_VERSION#/$(CLUSTER_VERSION)/g" > $(AWS_EKS_CLUSTER_SPEC) \
+	sed "s/#CLUSTER_NAME#/$(CLUSTER_NAME)/g" | \
+	sed "s/#CLUSTER_REGION#/$(CLUSTER_REGION)/g" | \
+	sed "s/#CLUSTER_VERSION#/\"$(CLUSTER_VERSION)\"/g" > $(AWS_EKS_CLUSTER_SPEC) \
 	&& $(EKSCTL) create cluster -f $(AWS_EKS_CLUSTER_SPEC)
 
 .PHONY: cluster-delete
 cluster-delete: $(EKSCTL) $(YTT)
 	cat $(CURDIR)/cluster.yml | \
-	sed "s/#CLUSTER_NAME#/$(CLUSTER_NAME)/g" > $(AWS_EKS_CLUSTER_SPEC) \
+	sed "s/#CLUSTER_NAME#/$(CLUSTER_NAME)/g" | \
+	sed "s/#CLUSTER_REGION#/$(CLUSTER_REGION)/g" | \
+	sed "s/#CLUSTER_VERSION#/\"$(CLUSTER_VERSION)\"/g" > $(AWS_EKS_CLUSTER_SPEC) \
 	&& $(EKSCTL) delete cluster -f $(AWS_EKS_CLUSTER_SPEC)
 
 .PHONY: validate
