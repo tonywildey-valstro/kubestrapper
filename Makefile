@@ -82,7 +82,7 @@ ifeq (,$(DNS_ZONE))
 endif
 
 .PHONY: runtime-deploy
-runtime-deploy: $(KUBEPROD) validate
+runtime-deploy: $(KUBEPROD) $(HELM) validate
 	[ -e "./kubeprod-autogen.${ENVIRONMENT}.json" ] && cp ./kubeprod-autogen.${ENVIRONMENT}.json ./kubeprod-autogen.json || echo "no autogen exists yet" \
 	&& $(KUBEPROD) install eks \
 		--email ${AWS_EKS_USER} \
@@ -90,10 +90,10 @@ runtime-deploy: $(KUBEPROD) validate
 		--authz-domain "${DNS_ZONE}" \
 		--keycloak-password "${KEYCLOAK_PASSWORD}" \
 		--keycloak-group "${KEYCLOAK_GROUP}" \
-		--manifests ./bkpr-v1.8.0/manifests \
-  && $(HELM) upgrade metrics-server \
-    --install stable/metrics-server \
-    --namespace kubeprod \
+		--manifests ./bkpr-v1.8.1/manifests \
+	&& $(HELM) repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/ \
+	&& $(HELM) upgrade metrics-server --install metrics-server/metrics-server \
+		--namespace kubeprod \
 	&& $(HELM) repo add autoscaler https://kubernetes.github.io/autoscaler \
 	&& $(HELM) upgrade cluster-autoscaler --install autoscaler/cluster-autoscaler-chart \
 		--set autoDiscovery.clusterName=$(CLUSTER_NAME) \
