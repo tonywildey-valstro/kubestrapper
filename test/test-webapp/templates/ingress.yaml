@@ -30,7 +30,7 @@ spec:
   tls:
     - hosts:
         - {{ .Values.domain | quote }}
-      secretName: {{ .secretName }}
+      secretName: {{ $fullName }}-tls-secret
   {{- end }}
   rules:
     {{- range .Values.ingress.hosts }}
