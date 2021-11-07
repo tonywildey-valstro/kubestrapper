@@ -90,7 +90,7 @@ runtime-deploy: $(KUBEPROD) $(HELM) validate
 		--authz-domain "${DNS_ZONE}" \
 		--keycloak-password "${KEYCLOAK_PASSWORD}" \
 		--keycloak-group "${KEYCLOAK_GROUP}" \
-		--manifests ./bkpr-v1.8.1/manifests \
+		--manifests ./bkpr-${BKPR_VERSION}/manifests \
 	&& $(HELM) repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/ \
 	&& $(HELM) upgrade metrics-server --install metrics-server/metrics-server \
 		--namespace kubeprod \
