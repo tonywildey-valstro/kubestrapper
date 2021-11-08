@@ -88,7 +88,7 @@ runtime-deploy: $(KUBEPROD) $(HELM) validate
 	&& $(KUBEPROD) install eks \
 		--email ${AWS_EKS_USER} \
 		--dns-zone "${DNS_ZONE}" \
-		--authz-domain "${DNS_ZONE}" \
+		--authz-domain "${AUTHZ_DOMAIN}" \
 		--keycloak-password "${KEYCLOAK_PASSWORD}" \
 		--keycloak-group "${KEYCLOAK_GROUP}" \
 		--manifests ./bkpr-${BKPR_VERSION}/manifests \
