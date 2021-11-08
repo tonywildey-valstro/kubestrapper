@@ -1,5 +1,6 @@
 BKPR_VERSION=v1.8.1
 KUBEPROD_RELEASE_URL=https://github.com/andycmaj/kube-prod-runtime/releases/download
+# KUBEPROD_RELEASE_URL=https://github.com/bitnami/kube-prod-runtime/releases/download
 
 LOCAL_BIN := $(CURDIR)/.bin
 PATH := $(LOCAL_BIN):$(PATH)
