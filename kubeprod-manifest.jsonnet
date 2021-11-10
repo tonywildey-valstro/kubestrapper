@@ -8,6 +8,8 @@ local GRAFANA_DASHBOARDS_CONFIG = "/opt/bitnami/grafana/conf/provisioning/dashbo
 	// Place your overrides here
     // See https://github.com/bitnami/kube-prod-runtime/blob/master/docs/components.md#prometheus
 
+    // letsencrypt_environment:: "staging",
+
     // prometheus config mod from https://github.com/lensapp/lens/blob/master/troubleshooting/custom-prometheus.md#helm-chart
     // see https://github.com/lensapp/lens/blob/master/jsonnet/custom-prometheus.jsonnet
     prometheus+: {
