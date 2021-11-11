@@ -49,7 +49,29 @@ local GRAFANA_DASHBOARDS_CONFIG = "/opt/bitnami/grafana/conf/provisioning/dashbo
                 "large-client-header-buffers": "8 128k",
                 "http2-max-field-size": "128k",  // default: 4k
                 "http2-max-header-size": "128k",  
-                "client_header_buffer_size": "128k"
+                "client_header_buffer_size": "128k",
+
+                // Uncomment for request body logging
+                // "log-format-upstream": "$remote_addr - $remote_user [$time_local] \"$request\" $status $body_bytes_sent \"$http_referer\" \"$http_user_agent\" $request_length $request_time [$proxy_upstream_name] [$proxy_alternative_upstream_name] $upstream_addr $upstream_response_length $upstream_response_time $upstream_status $req_id \"$request_body\""
+            },
+        },
+    },
+
+    keycloak+: {
+        sts+: {
+            spec+:{
+                template+: {
+                    spec+: {
+                        containers_+: {
+                            keycloak+: {
+                                env_+: {
+                                    // Uncomment for keycloak debug logging
+                                    // KEYCLOAK_LOGLEVEL: "ALL",
+                                },
+                            },
+                        },
+                    },
+                },
             },
         },
     },
