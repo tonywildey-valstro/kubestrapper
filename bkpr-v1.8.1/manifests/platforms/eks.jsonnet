@@ -160,12 +160,11 @@ local grafana = import "../components/grafana.jsonnet";
               proxy+: {
                 args_+: {
                   "email-domain": $.config.oauthProxy.authz_domain,
-                  provider: "keycloak",
-                  "keycloak-group": $.config.keycloak.group,
-                  "login-url": "https://id.%s/auth/realms/BKPR/protocol/openid-connect/auth" % $.external_dns_zone_name,
-                  "redeem-url": "https://id.%s/auth/realms/BKPR/protocol/openid-connect/token" % $.external_dns_zone_name,
-                  "validate-url": "https://id.%s/auth/realms/BKPR/protocol/openid-connect/userinfo" % $.external_dns_zone_name,
                   "ssl-insecure-skip-verify": $.ssl_skip_verify,
+                  "provider": "oidc",
+                  "pass-authorization-header": "true",
+                  "pass-access-token": "true",
+                  "oidc-issuer-url": "https://id.%s/auth/realms/BKPR" % $.external_dns_zone_name,
                 },
               },
             },
