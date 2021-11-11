@@ -6,6 +6,11 @@ metadata:
   region: #CLUSTER_REGION#
   version: #CLUSTER_VERSION#
 
+vpc:
+  publicAccessCIDRs: [#CLUSTER_PUBLIC_ACCESS_CIDR#]
+  clusterEndpoints:
+    privateAccess: true
+
 nodeGroups:
   - name: nodes
     instanceType: t3.large
