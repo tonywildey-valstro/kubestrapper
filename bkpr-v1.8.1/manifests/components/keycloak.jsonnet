@@ -142,7 +142,6 @@ local bkpr_realm_json_tmpl = importstr "keycloak/bkpr_realm_json_tmpl";
                 DB_PASSWORD: kube.SecretKeyRef($.secret, "db_password"),
                 DB_DATABASE: KEYCLOAK_DB_DATABASE,
                 PROXY_ADDRESS_FORWARDING: "true",
-                KEYCLOAK_LOGLEVEL: "ALL",
               },
               readinessProbe: {
                 httpGet: {path: "/auth/realms/master", port: "http"},
