@@ -55,12 +55,17 @@ releases-ytt:
 
 CLUSTER_REGION ?= "us-east-2"
 CLUSTER_VERSION ?= "1.21"
-CLUSTER_PUBLIC_ACCESS_CIDR ?= ""
 AWS_EKS_CLUSTER_SPEC=$(CURDIR)/.out/cluster.yml
 
+ifeq (,$(CLUSTER_PUBLIC_ACCESS_CIDR))
+CLUSTER_TEMPLATE ?= $(CURDIR)/cluster.yml
+else
+CLUSTER_TEMPLATE ?= $(CURDIR)/cluster-private.yml
+endif
+
 .PHONY: cluster-create
-cluster-create: $(EKSCTL) $(YTT)
-	cat $(CURDIR)/cluster.yml | \
+cluster-create: $(EKSCTL) 
+	cat $(CLUSTER_TEMPLATE) | \
 	sed "s/#CLUSTER_NAME#/$(CLUSTER_NAME)/g" | \
 	sed "s/#CLUSTER_REGION#/$(CLUSTER_REGION)/g" | \
 	sed "s/#CLUSTER_VERSION#/\"$(CLUSTER_VERSION)\"/g" | \
@@ -69,14 +74,8 @@ cluster-create: $(EKSCTL) $(YTT)
 	&& $(EKSCTL) create cluster -f $(AWS_EKS_CLUSTER_SPEC)
 
 .PHONY: cluster-delete
-cluster-delete: $(EKSCTL) $(YTT)
-	cat $(CURDIR)/cluster.yml | \
-	sed "s/#CLUSTER_NAME#/$(CLUSTER_NAME)/g" | \
-	sed "s/#CLUSTER_REGION#/$(CLUSTER_REGION)/g" | \
-	sed "s/#CLUSTER_VERSION#/\"$(CLUSTER_VERSION)\"/g" | \
-	sed "s/#CLUSTER_PUBLIC_ACCESS_CIDR#/\"$(CLUSTER_PUBLIC_ACCESS_CIDR)\"/g" \
-	  > $(AWS_EKS_CLUSTER_SPEC) \
-	&& $(EKSCTL) delete cluster -f $(AWS_EKS_CLUSTER_SPEC)
+cluster-delete: $(EKSCTL)
+	$(EKSCTL) delete cluster -n $(CLUSTER_NAME)
 
 .PHONY: validate
 validate:
